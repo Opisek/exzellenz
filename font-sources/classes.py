@@ -2,21 +2,36 @@
 
 from itertools import chain
 
-right_full = {"A", "H", "M", "N", "O", "Q", "U", "W"}
-right_upper_bar = {"P", "R"}
-right_lower_bar = {"G", "S"}
-right_upper_point = {"C", "E", "F", "G", "I", "J", "K", "S", "T", "V", "Y", "Z"}
-right_lower_point = {"C", "E", "I", "K", "L", "R", "X", "Z"}
+right_full = {"A", "H", "M", "N", "O", "Q", "U", "W", "0", "9", "8", "4", "3"}
+right_upper_bar = {"P", "R", "2", "?"}
+right_lower_bar = {"G", "S", "5", "6", "$"}
+right_upper_point = {"C", "E", "F", "G", "I", "J", "K", "S", "T", "V", "Y", "Z", "5", "6", "7", "$", "/"}
+right_lower_point = {"C", "E", "I", "K", "L", "R", "X", "Z", "2", "1"}
 right_d_shape = {"B", "D"}
 right_x_like = {"V", "X", "Y"}
 
-left_full = {"A", "B", "C", "D", "E", "F", "G", "H", "K", "L", "M", "N", "O", "P", "Q", "R", "U", "W"}
-left_upper_bar = {"S"}
-left_lower_bar = set()
-left_upper_point = {"I", "J", "T", "V", "Y", "Z"}
-left_lower_point = {"I", "J", "X", "Y", "Z"}
+left_full = {"A", "B", "C", "D", "E", "F", "G", "H", "K", "L", "M", "N", "O", "P", "Q", "R", "U", "W", "8", "6", "0"}
+left_upper_bar = {"S", "$", "5", "4"}
+left_lower_bar = {"2"}
+left_upper_point = {"I", "J", "T", "V", "Y", "Z", "7", "2", "3"}
+left_lower_point = {"I", "J", "X", "Y", "Z", "1", "9", "3", "5", "7", "/"}
 left_x_like = right_x_like
 
+character_names = {
+    "0": "zero",
+    "1": "one",
+    "2": "two",
+    "3": "three",
+    "4": "four",
+    "5": "five",
+    "6": "six",
+    "7": "seven",
+    "8": "eight",
+    "9": "nine",
+    "/": "slash",
+    "?": "question",
+    "$": "dollar"
+}
 
 class KernClass:
     def __init__(self, characters, name):
@@ -61,6 +76,10 @@ left_classes = std_kern_classes(full=left_full,
 
 sides = {"right": right_classes, "left": left_classes}
 
+def convert_character(c: str):
+    if c.isalpha(): return c + " " + c.lower()
+    return character_names.get(c) + "(" + c + ")"
+
 if __name__ == "__main__":
 
     with open("classes-output.txt", "w") as out:
@@ -82,7 +101,7 @@ if __name__ == "__main__":
         all_characters = set()
 
         print(f"{side_name.capitalize()} side collisions:")
-        print(" " * longest_name_length, *names(), sep='|')
+        print(" " * longest_name_length, *names(), sep="|")
 
         for kern_class in kern_classes:
             print(f_string_c_name.format(c_name=kern_class.name), end="")
@@ -115,7 +134,7 @@ if __name__ == "__main__":
                      f"{len(list((k for k in kern_classes if k.characters)))} classes:"
 
             out_content = '\n'.join((f_string_c_name.format(c_name=c.name) +
-                                     f": {' '.join(chain(*((c, c.lower()) for c in sorted(c.characters))))}"
+                                     f": {' '.join((convert_character(c) for c in sorted(c.characters)))}"
                                      for i, c in enumerate(kern_classes) if c.characters))
 
             print(header)
